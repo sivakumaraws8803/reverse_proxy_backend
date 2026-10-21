@@ -1,0 +1,76 @@
+# Update system
+sudo dnf update -y
+
+# Install Node.js and npm
+sudo dnf install -y nodejs20
+
+# Verify Node.js and npm
+node -v
+npm -v
+
+# Install PM2
+sudo npm install -g pm2
+
+# Verify PM2
+pm2 -v
+
+# Install Nginx
+sudo dnf install -y nginx
+
+# Enable and start Nginx
+sudo systemctl enable --now nginx
+
+# Check Nginx status
+sudo systemctl status nginx
+
+# Verify Nginx version
+nginx -v
+
+# Check listening ports
+sudo ss -lntp
+
+# Test Nginx
+curl http://localhost
+
+# Create sample Node.js application
+mkdir -p ~/node-demo
+cd ~/node-demo
+npm init -y
+
+# Create server.js
+cat > server.js <<'EOF'
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Node.js application is running!');
+});
+
+server.listen(3000, '0.0.0.0', () => {
+  console.log('Server listening on port 3000');
+});
+EOF
+
+# Start application with PM2
+pm2 start server.js --name node-demo
+
+# Check PM2 processes
+pm2 list
+
+# Test Node.js application
+curl http://localhost:3000
+
+# Save PM2 process list
+pm2 save
+
+# Configure PM2 startup after reboot
+pm2 startup
+
+# Check application logs
+pm2 logs node-demo
+
+# Restart application
+pm2 restart node-demo
+
+# Stop application
+pm2 stop node-demo
